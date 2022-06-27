@@ -1,45 +1,70 @@
-/*
-Copyright © 2022 NAME HERE <EMAIL ADDRESS>
-
-*/
 package cmd
 
 import (
+	"errors"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
-	"github.com/labstack/echo/v4"
+	"github.com/1talent/gotraining/internal/api"
+	"github.com/1talent/gotraining/internal/api/router"
+	"github.com/1talent/gotraining/internal/config"
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
+)
+
+const (
+	probeFlag   string = "probe"
+	migrateFlag string = "migrate"
+	seedFlag    string = "seed"
 )
 
 // serverCmd represents the server command
 var serverCmd = &cobra.Command{
 	Use:   "server",
-	Short: "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Short: "Starts the server",
+	Long: `Starts the stateless RESTful JSON server
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Requires configuration through ENV and
+and a fully migrated PostgreSQL database.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		e := echo.New()
-		e.GET("/", func(c echo.Context) error {
-			return c.String(http.StatusOK, "Hello, World!")
-		})
-		e.Logger.Fatal(e.Start(":1323"))
+
+		runServer()
 	},
 }
 
 func init() {
+	// serverCmd.Flags().BoolP(probeFlag, "p", false, "Probe readiness before startup.")
+	// serverCmd.Flags().BoolP(migrateFlag, "m", false, "Apply migrations before startup.")
+	// serverCmd.Flags().BoolP(seedFlag, "s", false, "Seed fixtures into database before startup.")
+
 	rootCmd.AddCommand(serverCmd)
+}
 
-	// Here you will define your flags and configuration settings.
+func runServer() {
+	config := config.DefaultServiceConfigFromEnv()
 
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// serverCmd.PersistentFlags().String("foo", "", "A help for foo")
+	zerolog.TimeFieldFormat = time.RFC3339Nano
 
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// serverCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	s := api.NewServer(config)
+
+	router.Init(s)
+
+	go func() {
+		if err := s.Start(); err != nil {
+			if errors.Is(err, http.ErrServerClosed) {
+				log.Info().Msg("Server closed")
+			} else {
+				log.Fatal().Err(err).Msg("Failed to start server")
+			}
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
+	<-quit
+
 }
