@@ -56,6 +56,10 @@ func Init(s *api.Server) {
 	}
 
 	// TODO: Implement specific middlewares: Logger, CacheControl, Profiler, Auth
+	// s.Router.Root.Add("GET", "/", func(c echo.Context) error {
+	// 	// return c.String(200, "Hello, World!")
+
+	// })
 
 	s.Router = &api.Router{
 		Routes: nil, // will be populated by handlers.AttachAllRoutes(s)

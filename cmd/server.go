@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"os"
@@ -50,6 +51,13 @@ func runServer() {
 	zerolog.TimeFieldFormat = time.RFC3339Nano
 
 	s := api.NewServer(config)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	if err := s.InitDB(ctx); err != nil {
+		cancel()
+		log.Fatal().Err(err).Msg("Failed to initialize database")
+	}
+	cancel()
 
 	router.Init(s)
 
