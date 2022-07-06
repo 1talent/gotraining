@@ -9,7 +9,7 @@ require (
 	github.com/go-openapi/validate v0.22.0
 	github.com/labstack/echo/v4 v4.7.2
 	github.com/rs/zerolog v1.27.0
-	github.com/spf13/cobra v1.4.0
+	github.com/spf13/cobra v1.5.0
 )
 
 require (
