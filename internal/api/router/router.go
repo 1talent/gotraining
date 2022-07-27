@@ -2,6 +2,7 @@ package router
 
 import (
 	"github.com/1talent/gotraining/internal/api"
+	"github.com/1talent/gotraining/internal/api/handlers"
 	"github.com/1talent/gotraining/internal/api/middleware"
 	"github.com/labstack/echo/v4"
 	echoMiddleware "github.com/labstack/echo/v4/middleware"
@@ -84,4 +85,7 @@ func Init(s *api.Server) {
 			},
 		})),
 	}
+
+	// this is where our handler function to url mappings get attached to our server, s
+	handlers.AttachAllRoutes(s)
 }
