@@ -1,7 +1,10 @@
 package auth
 
 import (
+	"fmt"
+
 	"github.com/1talent/gotraining/internal/api"
+	"github.com/1talent/gotraining/internal/types/models"
 	"github.com/1talent/gotraining/internal/util"
 	"github.com/labstack/echo/v4"
 )
@@ -23,7 +26,9 @@ func postRegisterHandler(s *api.Server) echo.HandlerFunc {
 		// now, we come to your original quetsion in the discord channel - how to do "go swagger"
 		// we actually want to generate our payload types (payload meaning the payload coming from client)
 		// from swagger definitions
-		// var body types.PostRegisterPayLoad
+		// should be "types" but we use "models" for now until we fix swagger output path
+		var body models.PostRegisterPayLoad
+		fmt.Println(body) // TODO: change models to types
 
 		return nil
 	}
