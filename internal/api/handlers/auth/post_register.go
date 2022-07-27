@@ -12,10 +12,19 @@ func PostRegisterRoute(s *api.Server) *echo.Route {
 
 func postRegisterHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
+
+		// boring administrative code that we will need but not really business logic
 		ctx := c.Request().Context()
 		// log capability with the zerolog library and customisations in log.go and context.go
 		log := util.LogFromContext(ctx)
 		log.Info().Msg("we have an info logger implemented")
+
+		// this is the critical part - we are parsing out the value from our client
+		// now, we come to your original quetsion in the discord channel - how to do "go swagger"
+		// we actually want to generate our payload types (payload meaning the payload coming from client)
+		// from swagger definitions
+		// var body types.PostRegisterPayLoad
+
 		return nil
 	}
 }
