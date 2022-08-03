@@ -7,6 +7,12 @@ import (
 	"github.com/1talent/gotraining/internal/util"
 )
 
+type AuthServer struct {
+	AccessTokenValidity          time.Duration
+	PasswordResetTokenValidity   time.Duration
+	DefaultUserScopes            []string
+	LastAuthenticatedAtThreshold time.Duration
+}
 type EchoServer struct {
 	ListenAddress                 string
 	EnableCORSMiddleware          bool
@@ -36,6 +42,7 @@ type EchoServerSecureMiddleware struct {
 type Server struct {
 	Echo     EchoServer
 	Database Database
+	Auth     AuthServer
 }
 
 func DefaultServiceConfigFromEnv() Server {

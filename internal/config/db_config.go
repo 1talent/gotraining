@@ -53,7 +53,7 @@ func (c Database) ConnectionString() string {
 		}
 	}
 
-	fmt.Printf("DB uri: %v", b.String())
+	fmt.Printf("DB uri: %v\n", b.String())
 
 	return b.String()
 }
