@@ -28,7 +28,7 @@ func GetProjectRootDir() string {
 			log.Panic().Err(err).Msg("Failed to get executable path while retrieving project root directory")
 		}
 
-		projectRootDir = GetEnv("PROJECT_ROOT_DIR", filepath.Dir(ex))
+		projectRootDir = GetEnv("/app", filepath.Dir(ex))
 	})
 
 	return projectRootDir
