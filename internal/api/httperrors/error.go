@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/1talent/gotraining/internal/types"
+	"github.com/go-openapi/swag"
 )
 
 const (
@@ -26,6 +27,27 @@ type HTTPValidationError struct {
 	types.PublicHTTPValidationError
 	Internal       error                  `json:"-"`
 	AdditionalData map[string]interface{} `json:"-"`
+}
+
+func NewHTTPError(code int, errorType string, title string) *HTTPError {
+	return &HTTPError{
+		PublicHTTPError: types.PublicHTTPError{
+			Code:  swag.Int64(int64(code)),
+			Type:  swag.String(errorType),
+			Title: swag.String(title),
+		},
+	}
+}
+
+func NewHTTPErrorWithDetail(code int, errorType string, title string, detail string) *HTTPError {
+	return &HTTPError{
+		PublicHTTPError: types.PublicHTTPError{
+			Code:   swag.Int64(int64(code)),
+			Type:   swag.String(errorType),
+			Title:  swag.String(title),
+			Detail: detail,
+		},
+	}
 }
 
 func (e *HTTPError) Error() string {
@@ -56,6 +78,33 @@ func (e *HTTPError) Error() string {
 	}
 
 	return b.String()
+}
+
+func NewHTTPValidationError(code int, errorType string, title string, validationErrors []*types.HTTPValidationErrorDetail) *HTTPValidationError {
+	return &HTTPValidationError{
+		PublicHTTPValidationError: types.PublicHTTPValidationError{
+			PublicHTTPError: types.PublicHTTPError{
+				Code:  swag.Int64(int64(code)),
+				Type:  swag.String(errorType),
+				Title: swag.String(title),
+			},
+			ValidationErrors: validationErrors,
+		},
+	}
+}
+
+func NewHTTPValidationErrorWithDetail(code int, errorType string, title string, validationErrors []*types.HTTPValidationErrorDetail, detail string) *HTTPValidationError {
+	return &HTTPValidationError{
+		PublicHTTPValidationError: types.PublicHTTPValidationError{
+			PublicHTTPError: types.PublicHTTPError{
+				Code:   swag.Int64(int64(code)),
+				Type:   swag.String(errorType),
+				Title:  swag.String(title),
+				Detail: detail,
+			},
+			ValidationErrors: validationErrors,
+		},
+	}
 }
 
 func (e *HTTPValidationError) Error() string {
