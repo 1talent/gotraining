@@ -16,7 +16,7 @@ import (
 
 // PostForgotPasswordPayload post forgot password payload
 //
-// swagger:model PostForgotPasswordPayload
+// swagger:model postForgotPasswordPayload
 type PostForgotPasswordPayload struct {
 
 	// Username to initiate password reset for

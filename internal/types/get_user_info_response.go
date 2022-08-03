@@ -18,7 +18,7 @@ import (
 
 // GetUserInfoResponse get user info response
 //
-// swagger:model GetUserInfoResponse
+// swagger:model getUserInfoResponse
 type GetUserInfoResponse struct {
 
 	// Email address of user, if available

@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/1talent/gotraining/internal/api"
-	"github.com/1talent/gotraining/internal/types/models"
 	"github.com/1talent/gotraining/internal/util"
 	"github.com/labstack/echo/v4"
 )
@@ -27,7 +26,7 @@ func postRegisterHandler(s *api.Server) echo.HandlerFunc {
 		// we actually want to generate our payload types (payload meaning the payload coming from client)
 		// from swagger definitions
 		// should be "types" but we use "models" for now until we fix swagger output path
-		var body models.PostRegisterPayLoad
+		var body PostRegisterPayLoad
 		fmt.Println(body) // TODO: change models to types
 
 		return nil

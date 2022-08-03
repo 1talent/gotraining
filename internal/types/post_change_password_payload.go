@@ -16,7 +16,7 @@ import (
 
 // PostChangePasswordPayload post change password payload
 //
-// swagger:model PostChangePasswordPayload
+// swagger:model postChangePasswordPayload
 type PostChangePasswordPayload struct {
 
 	// Current password of user

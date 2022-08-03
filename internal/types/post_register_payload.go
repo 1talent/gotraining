@@ -16,7 +16,7 @@ import (
 
 // PostRegisterPayload post register payload
 //
-// swagger:model PostRegisterPayload
+// swagger:model postRegisterPayload
 type PostRegisterPayload struct {
 
 	// Password to register with

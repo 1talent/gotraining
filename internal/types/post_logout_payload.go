@@ -16,7 +16,7 @@ import (
 
 // PostLogoutPayload post logout payload
 //
-// swagger:model PostLogoutPayload
+// swagger:model postLogoutPayload
 type PostLogoutPayload struct {
 
 	// Optional refresh token to delete while logging out

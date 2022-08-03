@@ -16,7 +16,7 @@ import (
 
 // PostForgotPasswordCompletePayload post forgot password complete payload
 //
-// swagger:model PostForgotPasswordCompletePayload
+// swagger:model postForgotPasswordCompletePayload
 type PostForgotPasswordCompletePayload struct {
 
 	// New password to set for user

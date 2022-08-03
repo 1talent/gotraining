@@ -16,7 +16,7 @@ import (
 
 // PostLoginResponse post login response
 //
-// swagger:model PostLoginResponse
+// swagger:model postLoginResponse
 type PostLoginResponse struct {
 
 	// Access token required for accessing protected API endpoints

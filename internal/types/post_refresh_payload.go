@@ -16,7 +16,7 @@ import (
 
 // PostRefreshPayload post refresh payload
 //
-// swagger:model PostRefreshPayload
+// swagger:model postRefreshPayload
 type PostRefreshPayload struct {
 
 	// Refresh token to use for retrieving new token set

@@ -16,7 +16,7 @@ import (
 
 // PostLoginPayload post login payload
 //
-// swagger:model PostLoginPayload
+// swagger:model postLoginPayload
 type PostLoginPayload struct {
 
 	// Password of user to authenticate as
