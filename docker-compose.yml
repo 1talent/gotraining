@@ -28,7 +28,17 @@ services:
         - docker.env
       volumes:
         - pgvolume:/var/lib/postgresql/data
-
+  integresql:
+    image: allaboutapps/integresql:1.0.0
+    expose:
+      - "5000"
+    depends_on:
+      - postgres
+    env_file:
+        - docker.env
+    environment:
+      - docker.env
+      
 # this declares our `pgvolume` docker volume instance
 volumes:
   pgvolume:
