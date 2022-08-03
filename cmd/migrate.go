@@ -42,6 +42,7 @@ func migrateCmdFunc(cmd *cobra.Command, args []string) {
 func applyMigrations() (int, error) {
 	ctx := context.Background()
 	serviceConfig := config.DefaultServiceConfigFromEnv()
+	fmt.Println("DatabaseMigrationFolder", config.DatabaseMigrationFolder)
 	db, err := sql.Open("postgres", serviceConfig.Database.ConnectionString())
 	if err != nil {
 		return 0, err
@@ -57,7 +58,6 @@ func applyMigrations() (int, error) {
 	if _, err := db.Exec(fmt.Sprintf("ALTER TABLE IF EXISTS gorp_migrations RENAME TO %s;", config.DatabaseMigrationTable)); err != nil {
 		return 0, err
 	}
-
 	migrations := &migrate.FileMigrationSource{
 		Dir: config.DatabaseMigrationFolder,
 	}
