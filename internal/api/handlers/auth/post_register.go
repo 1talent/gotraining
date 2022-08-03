@@ -1,11 +1,26 @@
 package auth
 
 import (
-	"fmt"
+	"net/http"
+	"time"
 
 	"github.com/1talent/gotraining/internal/api"
+	"github.com/1talent/gotraining/internal/api/httperrors"
+	"github.com/1talent/gotraining/internal/models"
+	"github.com/1talent/gotraining/internal/types"
 	"github.com/1talent/gotraining/internal/util"
+	"github.com/1talent/gotraining/internal/util/db"
+	"github.com/1talent/gotraining/internal/util/hashing"
+	"github.com/go-openapi/strfmt"
+	"github.com/go-openapi/strfmt/conv"
+	"github.com/go-openapi/swag"
 	"github.com/labstack/echo/v4"
+	"github.com/volatiletech/null/v8"
+	"github.com/volatiletech/sqlboiler/v4/boil"
+)
+
+const (
+	TokenTypeBearer = "bearer"
 )
 
 func PostRegisterRoute(s *api.Server) *echo.Route {
@@ -19,16 +34,91 @@ func postRegisterHandler(s *api.Server) echo.HandlerFunc {
 		ctx := c.Request().Context()
 		// log capability with the zerolog library and customisations in log.go and context.go
 		log := util.LogFromContext(ctx)
-		log.Info().Msg("we have an info logger implemented")
+		var body types.PostRegisterPayload
 
-		// this is the critical part - we are parsing out the value from our client
-		// now, we come to your original quetsion in the discord channel - how to do "go swagger"
-		// we actually want to generate our payload types (payload meaning the payload coming from client)
-		// from swagger definitions
-		// should be "types" but we use "models" for now until we fix swagger output path
-		var body PostRegisterPayLoad
-		fmt.Println(body) // TODO: change models to types
+		if err := util.BindAndValidateBody(c, &body); err != nil {
+			return err
+		}
 
-		return nil
+		// enforce lowercase usernames, trim whitespaces
+		username := util.ToUsernameFormat(body.Username.String())
+
+		exists, err := models.Users(models.UserWhere.Username.EQ(null.StringFrom(username))).Exists(ctx, s.DB)
+
+		if err != nil {
+			log.Debug().Err(err).Str("username", username).Msg("Failed to check whether user exists")
+			return err
+		}
+
+		if exists {
+			log.Debug().Str("username", username).Msg("User with given username already exists")
+			return httperrors.ErrConflictUserAlreadyExists
+		}
+
+		hash, err := hashing.HashPassword(*body.Password, hashing.DefaultArgon2Params)
+		if err != nil {
+			log.Debug().Str("username", username).Err(err).Msg("Failed to hash user password")
+			return httperrors.ErrBadRequestInvalidPassword
+		}
+
+		response := &types.PostLoginResponse{
+			TokenType: swag.String(TokenTypeBearer),
+			ExpiresIn: swag.Int64(int64(s.Config.Auth.AccessTokenValidity.Seconds())),
+		}
+
+		if err := db.WithTransaction(ctx, s.DB, func(tx boil.ContextExecutor) error {
+			user := &models.User{
+				Username:            null.StringFrom(username),
+				Password:            null.StringFrom(hash),
+				LastAuthenticatedAt: null.TimeFrom(time.Now()),
+				IsActive:            true,
+				Scopes:              s.Config.Auth.DefaultUserScopes,
+			}
+
+			if err := user.Insert(ctx, tx, boil.Infer()); err != nil {
+				log.Debug().Err(err).Msg("Failed to insert user")
+				return err
+			}
+
+			appUserProfile := models.AppUserProfile{
+				UserID: user.ID,
+			}
+
+			if err := appUserProfile.Insert(ctx, tx, boil.Infer()); err != nil {
+				log.Debug().Err(err).Msg("Failed to insert app user profile")
+				return err
+			}
+
+			accessToken := models.AccessToken{
+				ValidUntil: time.Now().Add(s.Config.Auth.AccessTokenValidity),
+				UserID:     user.ID,
+			}
+
+			if err := accessToken.Insert(ctx, tx, boil.Infer()); err != nil {
+				log.Debug().Err(err).Msg("Failed to insert access token")
+				return err
+			}
+
+			refreshToken := models.RefreshToken{
+				UserID: user.ID,
+			}
+
+			if err := refreshToken.Insert(ctx, tx, boil.Infer()); err != nil {
+				log.Debug().Err(err).Msg("Failed to insert refresh token")
+				return err
+			}
+
+			response.AccessToken = conv.UUID4(strfmt.UUID4(accessToken.Token))
+			response.RefreshToken = conv.UUID4(strfmt.UUID4(refreshToken.Token))
+
+			return nil
+		}); err != nil {
+			log.Debug().Err(err).Msg("Failed to register user")
+			return err
+		}
+
+		log.Debug().Msg("Successfully registered user, returning new set of access and refresh tokens")
+
+		return util.ValidateAndReturn(c, http.StatusOK, response)
 	}
 }
