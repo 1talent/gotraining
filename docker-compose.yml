@@ -4,10 +4,10 @@ services:
 
   # if we declare our golang app service here, then it will be able to discover the "postgres" hostname
   # but if we are trying to connect to our postgres database from our macos host machine, then it only
-  # knows about "localhost:5433"
+  # knows about "localhost:5432"
   # service:
-  #    then, this particular golang service will need to find postgres database as "postgres:5433"
-  #    and not "localhost:5433"
+  #    then, this particular golang service will need to find postgres database as "postgres:5432"
+  #    and not "localhost:5432"
 
   postgres:
       image: postgres:12.4-alpine # should be the same version as used in .drone.yml, .github/workflows, Dockerfile and live
@@ -21,9 +21,9 @@ services:
       # Apply some performance improvements to pg as these guarantees are not needed while running locally
       command: "postgres -c 'shared_buffers=128MB' -c 'fsync=off' -c 'synchronous_commit=off' -c 'full_page_writes=off' -c 'max_connections=100' -c 'client_min_messages=warning'"
       expose:
-        - "5433"
+        - "5432"
       ports:
-        - "5433:5432"
+        - "5432:5432"
       env_file:
         - docker.env
       volumes:

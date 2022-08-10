@@ -2,7 +2,6 @@ package auth_test
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"testing"
 	"time"
@@ -33,7 +32,6 @@ func TestPostResgisterSuccess(t *testing.T) {
 
 		var response types.PostLoginResponse
 		test.ParseResponseAndValidate(t, res, &response)
-		fmt.Println(response)
 		assert.NotEmpty(t, response.AccessToken)
 		assert.NotEmpty(t, response.RefreshToken)
 		assert.Equal(t, int64(s.Config.Auth.AccessTokenValidity.Seconds()), *response.ExpiresIn)

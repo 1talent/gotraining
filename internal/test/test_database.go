@@ -13,7 +13,6 @@ import (
 	"testing"
 
 	"github.com/1talent/gotraining/internal/config"
-	pUtil "github.com/1talent/gotraining/internal/util"
 	dbutil "github.com/1talent/gotraining/internal/util/db"
 	"github.com/allaboutapps/integresql-client-go"
 	"github.com/allaboutapps/integresql-client-go/pkg/util"
@@ -31,14 +30,13 @@ var (
 	poolHashMap = &sync.Map{} // "poolID" -> "poolHash"
 
 	// we will compute a db template hash over the following dirs/files
-	migDir           = config.DatabaseMigrationFolder
-	fixFile          = filepath.Join(pUtil.GetProjectRootDir(), "/internal/test/fixtures.go")
-	selfFile         = filepath.Join(pUtil.GetProjectRootDir(), "/internal/test/test_database.go")
+	migDir           = "/Users/trannguyen/Workspaces/1talent/syllabus/gotraining/migrations" // These paths shouldn't be hardcode, it's just for debugging
+	fixFile          = filepath.Join("/Users/trannguyen/Workspaces/1talent/syllabus/gotraining", "/internal/test/fixtures.go")
+	selfFile         = filepath.Join("/Users/trannguyen/Workspaces/1talent/syllabus/gotraining", "/internal/test/test_database.go")
 	defaultPoolPaths = []string{migDir, fixFile, selfFile}
 )
 
 func init() {
-	fmt.Printf("why %v\n", defaultPoolPaths)
 	// autoinitialize IntegreSQL client
 	c, err := integresql.DefaultClientFromEnv()
 	if err != nil {

@@ -49,7 +49,7 @@ func DefaultServiceConfigFromEnv() Server {
 	return Server{
 		Database: Database{
 			Host:     util.GetEnv("PGHOST", "localhost"),
-			Port:     util.GetEnvAsInt("PGPORT", 5433),
+			Port:     util.GetEnvAsInt("PGPORT", 5432),
 			Database: util.GetEnv("PGDATABASE", "development"),
 			Username: util.GetEnv("PGUSER", "dbuser"),
 			Password: util.GetEnv("PGPASSWORD", "dbpass"),

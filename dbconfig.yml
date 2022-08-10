@@ -2,7 +2,7 @@
 # the live database
 development:
     dialect: postgres
-    datasource: host=localhost dbname=development user=dbuser password=dbpass port=5433 sslmode=disable
+    datasource: host=localhost dbname=development user=dbuser password=dbpass port=5432 sslmode=disable
     dir: migrations
     table: migrations
 
@@ -10,6 +10,6 @@ development:
 # the spec database (used for introspection purposes e.g. generate the sqlboiler models)
 spec:
     dialect: postgres
-    datasource: host=localhost dbname=development user=dbuser password=dbpass port=5433 sslmode=disable
+    datasource: host=localhost dbname=development user=dbuser password=dbpass port=5432 sslmode=disable
     dir: migrations
     table: migrations
